@@ -1,0 +1,236 @@
+<!doctype html>
+
+<html ng-app="myApp">
+  <head>
+    <title>Drag and Drop</title>
+    <script src="js/formCreater.js"></script>
+  </head>
+  <body >
+
+    <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:25%;" ng-controller="FormController as form">
+
+      <h3 class="w3-button">Add An Element</h3>
+      <p drag-container="true" drag-data="labelData" class="w3-bar-item w3-button">Label</p>
+      <p drag-container="true" drag-data="buttonData" class="w3-bar-item w3-button">Button</p>
+      <p drag-container="true" drag-data="textData" class="w3-bar-item w3-button">Text Box</p>
+      <p drag-container="true" drag-data="dropDownData" class="w3-bar-item w3-button">Drop Down</p>
+      <p drag-container="true" drag-data="textAreaData" class="w3-bar-item w3-button">Text Area</p>
+      <p drag-container="true" drag-data="checkBoxData" class="w3-bar-item w3-button">Check box</p>
+
+    </div>
+
+    <div class= "form-Container" ng-controller="FormController as form">
+
+      <div>
+            <modal-dialog  show='modalShown'>
+              <h2 > Attributes<br></h2>
+
+              <div ng-repeat="(key,value) in elementArray" ng-switch="key" >
+                  <p ng-switch-when="label">Label: <input type="text" ng-model="elementArray[key]" ><br><p>
+                  <p ng-switch-when="text">Text: <input type="text" ng-model="elementArray[key]" ><br><p>
+                  <p ng-switch-when="rows">Rows: <input type="number" ng-model="elementArray[key]" > <br><p>
+                  <p ng-switch-when="cols">Colmuns: <input type="number" ng-model="elementArray[key]" > <br><p>
+                  <p ng-switch-when="dropDownResult">Selected: <input type="text" readonly ng-model="elementArray[key]" ><br><p>
+
+
+                  <div ng-switch-when="dropDownText">
+                    <div ng-repeat="dropElement in elementArray[key] track by $index">
+                        <p>Drop Down Element {{$index}} <input type="text" ng-model="elementArray[key][$index]" >
+                         <button type="button" ng-click="elementArray[key].splice($index, 1)" >Remove </button><br>
+                        <p>
+                    </div>
+
+                    <button type="button" ng-click="elementArray[key].push('')">Add Element</button><br>
+
+                  </div>
+
+                  <p ng-switch-when="width">Width: <input type="text" ng-model="elementArray[key]" ><br><p>
+                  <p ng-switch-when="height">Height: <input type="text" ng-model="elementArray[key]" ><br><p>
+
+                  <p ng-switch-when="fontSizeLabel">Label Font Size: <input type="text" ng-model="elementArray[key]" ><br><p>
+                  <p ng-switch-when="fontSizeText">Text Font Size: <input type="text" ng-model="elementArray[key]" ><br><p>
+                  <p ng-switch-defualt style="display:none;"> <br><p>
+
+              </div>
+
+
+            </modal-dialog>
+      </div>
+
+
+
+      <div >
+        <div  ng-repeat="element in form.formService.elementArray" ng-switch="element.type" ng-Dblclick= 'toggleModal($index)' >
+
+          <div class="dr-drop-container" ng-switch-when="label" drag-container="true" drop-container = "true" drop-accepts="true" ngDblclick = 'toggleModal($index)' drag-data="element" >
+
+                  <div drop-target="top"
+                    on-drop="form.formService.insertUp($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+                  <div drop-target="bottom"
+                    on-drop="form.formService.insertDown($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+
+                  <h3 class="dr-drop-label" ng-style="{height : element.height, width : element.width, fontSize: element.fontSizeLabel } ">{{element.label}}</h3>
+                  <p class="dr-drop-label" ng-style="{height : element.height, width : element.width, fontSize: element.fontSizeText } ">{{element.text}}</p>
+                  <p class="close-button" ng-click ="form.formService.elementArray.splice($index,1)">x<p>
+            </div>
+
+          <div class="dr-drop-container"
+                  drag-container="true"
+                  drop-container = "true"
+                  drop-accepts="true"
+                  ngDblclick = 'toggleModal($index)'
+                  drag-data="element"
+                  ng-switch-when="button"
+                  >
+
+                  <div drop-target="top"
+                    on-drop="form.formService.insertUp($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+                  <div drop-target="bottom"
+                    on-drop="form.formService.insertDown($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+                  <label ng-style="{fontSize: element.fontSizeLabel}"> {{element.label}}</label>
+                  <button class="dr-drop-button" type="button" ng-style="{height : element.height, width : element.width,fontSize: element.fontSizeText }" >{{element.text}}</button>
+                  <p class="close-button" ng-click ="form.formService.elementArray.splice($index,1)">x<p>
+
+            </div>
+
+            <div class="dr-drop-container"
+                drag-container="true"
+                drop-container = "true"
+                drop-accepts="true"
+                drag-data="element"
+                ng-switch-when="text"
+            >
+
+                  <div drop-target="top"
+                  on-drop="form.formService.insertUp($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+                  <div drop-target="bottom"
+                  on-drop="form.formService.insertDown($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+                <label ng-style="{fontSize: element.fontSizeLabel}"> {{element.label}}</label></br>
+                <input class="dr-drop-text" type="text" ng-model="element.text" ng-style="{height : element.height, width : element.width, fontSize: element.fontSizeText } "><br>
+                <p class="close-button" ng-click ="form.formService.elementArray.splice($index,1)">x<p>
+
+          </div>
+
+
+          <div class="dr-drop-container"
+                  drag-container="true"
+                  drop-container = "true"
+                  drop-accepts="true"
+                  ngDblclick = 'toggleModal($index)'
+                  drag-data="element"
+                  ng-switch-when="dropDown"
+                  >
+
+                  <div drop-target="top"
+                    on-drop="form.formService.insertUp($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+                  <div drop-target="bottom"
+                    on-drop="form.formService.insertDown($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+                  <label ng-style="{fontSize: element.fontSizeLabel}"> {{element.label}}</label></br>
+                  <select ng-model="element.dropDownResult" ng-options="x for x in element.dropDownText"
+                      ng-style="{height : element.height, width : element.width } "></select>
+                      <p class="close-button" ng-click ="form.formService.elementArray.splice($index,1)">x<p>
+
+            </div>
+
+            <div class="dr-drop-container"
+                drag-container="true"
+                drop-container = "true"
+                drop-accepts="true"
+                drag-data="element"
+                ng-switch-when="textArea"
+            >
+
+                  <div drop-target="top"
+                  on-drop="form.formService.insertUp($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+                  <div drop-target="bottom"
+                  on-drop="form.formService.insertDown($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                  ></div>
+
+                  <label ng-style="{fontSize: element.fontSizeLabel}"> {{element.label}}</label><br>
+
+                  <textarea class="dr-drop-text" rows = "{{element.rows}}" cols = "{{element.cols}}" ng-model="element.text"
+                    ng-style="{height : element.height, width : element.width, fontSize: element.fontSizeText}" } ">
+                  </textarea> <br>
+                  <p class="close-button" ng-click ="form.formService.elementArray.splice($index,1)">x<p>
+
+          </div>
+
+          <div class="dr-drop-container"
+              drag-container="true"
+              drop-container = "true"
+              drop-accepts="true"
+              drag-data="element"
+              ng-switch-when="checkBox"
+          >
+
+                <div drop-target="top"
+                on-drop="form.formService.insertUp($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+                ></div>
+
+                <div drop-target="bottom"
+                on-drop="form.formService.insertDown($dragData,form.formService.elementArray.indexOf($dragData),$index)"
+
+                ></div>
+
+              <label ng-style="{fontSize: element.fontSizeLabel}"> {{element.label}}</label><br>
+
+              <input type="checkbox" ng-model="element.checked" ng-style="{fontSize: element.fontSizeText}"
+                  > {{element.text}} </input> <br>
+
+              <p class="close-button" ng-click ="form.formService.elementArray.splice($index,1)">x<p>
+
+        </div>
+
+            <div class="dr-drop-empty"
+                drop-container = "true"
+                drop-accepts="true"
+                on-drop="form.formService.emptyDrop($dragData,form.formService.elementArray.indexOf($dragData)); "
+
+                ng-switch-default
+            >
+                <p> Drop Elements Here </p>
+            </div>
+
+
+          </div>
+        </div>
+
+        <div class="dr-drop-empty"
+            drop-container = "true"
+            drop-accepts="true"
+            on-drop="form.formService.emptyDrop($dragData,form.formService.elementArray.indexOf($dragData)); "
+            ng-show="!form.formService.elementArray.length"
+
+        >
+            <p> Drop Elements Here </p>
+        </div>
+
+              <button ng-click='toggleJSON()'>Show JSON Obj</button>
+
+            <div class="json-details" ng-class="{ 'hidden': ! showJSON }">
+                    <pre>{{form.formService.elementArray | json}}</pre>
+            </div>
+
+        </div>
+
+
+  </body>
+</html>
